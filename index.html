@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor de Programa - Vida y Ministerio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- html-docx-js for Word export -->
+    <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- EDITOR PANEL -->
+        <aside class="editor-panel">
+            <h2>Editar Programa</h2>
+            
+            <!-- Program Selector -->
+            <div class="form-group" style="background: #e8f0fe; padding: 10px; border-radius: 4px;">
+                <label style="margin-bottom: 5px;">Seleccionar Programa a Editar:</label>
+                <div style="display: flex; gap: 15px;">
+                    <label style="font-weight: normal; cursor: pointer;">
+                        <input type="radio" name="programSelector" value="program1" checked onchange="switchProgram('program1')"> Programa 1 (Arriba)
+                    </label>
+                    <label style="font-weight: normal; cursor: pointer;">
+                        <input type="radio" name="programSelector" value="program2" onchange="switchProgram('program2')"> Programa 2 (Abajo)
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Nombre de la Congregación</label>
+                <input type="text" id="congregationName" value="ALAMEDA">
+            </div>
+            
+            <div class="form-group">
+                <label>Fecha</label>
+                <div style="display: flex; gap: 5px;">
+                    <input type="date" id="programDateStart">
+                    <input type="date" id="programDateEnd">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Lectura Semanal</label>
+                <input type="text" id="weeklyReading" value="LECTURA SEMANAL DE LA BIBLIA">
+            </div>
+
+            <div class="form-group">
+                <label>Presidente</label>
+                <input type="text" id="chairman" value="[Nombre]">
+            </div>
+            <div class="form-group">
+                <label>Consejero Sala Auxiliar</label>
+                <input type="text" id="auxCounselor" value="Asdrúbal Ayala">
+            </div>
+
+            <!-- OPENING -->
+            <fieldset>
+                <legend>Inicio</legend>
+                <div class="form-group">
+                    <label>Canción Inicial</label>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="text" id="openingSong" value="[Número]" placeholder="Num">
+                        <input type="time" id="openingSongTime" value="00:00" style="width: 90px;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Oración de inicio</label>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="text" id="openingPrayer" value="[Nombre]" placeholder="Nombre">
+                        <input type="time" id="openingPrayerTime" value="00:00" style="width: 90px;">
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- TREASURES -->
+            <fieldset>
+                <legend>Tesoros de la Biblia</legend>
+                <div class="item-row">
+                    <input type="text" id="treasuresTalkTitle" placeholder="Título Discurso" value="[Título]">
+                    <input type="time" id="treasuresTalkTime" value="00:00" style="width: 90px;">
+                </div>
+                <div class="item-row">
+                    <input type="text" id="treasuresTalkSpeaker" placeholder="Orador" value="[Nombre]">
+                </div>
+                <div class="item-row">
+                    <label>Perlas Escondidas</label>
+                    <input type="text" id="gemsSpeaker" placeholder="Orador" value="[Nombre]">
+                    <input type="time" id="gemsTime" value="00:00" style="width: 90px;">
+                </div>
+                <div class="item-row">
+                    <label>Lectura de la Biblia</label>
+                    <input type="text" id="bibleReadingStudent" placeholder="Estudiante" value="[Nombre]">
+                    <input type="time" id="bibleReadingTime" value="00:00" style="width: 90px;">
+                </div>
+            </fieldset>
+
+            <!-- LIVING AS CHRISTIANS (Dynamic) -->
+            <fieldset id="ministrySection">
+                <legend>Seamos Mejores Maestros</legend>
+                <div id="ministryItems">
+                    <!-- Dynamic items will be injected here -->
+                </div>
+                <button type="button" class="btn-add" onclick="addMinistryItem()">+ Agregar Asignación</button>
+            </fieldset>
+
+            <!-- CHRISTIAN LIFE (Dynamic) -->
+            <fieldset id="christianLifeSection">
+                <legend>Nuestra Vida Cristiana</legend>
+                <div class="form-group">
+                    <label>Canción Intermedia</label>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="text" id="middleSong" value="[Número]">
+                        <input type="text" id="middleSongTime" value="0:00" placeholder="Tiempo" style="width: 60px;">
+                    </div>
+                </div>
+                <div id="christianLifeItems">
+                    <!-- Dynamic items will be injected here -->
+                </div>
+                <button type="button" class="btn-add" onclick="addChristianLifeItem()">+ Agregar Parte</button>
+                
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label>Estudio Bíblico</label>
+                    <div style="display: flex; gap: 5px; margin-bottom: 5px;">
+                        <input type="text" id="congregationStudyConductor" placeholder="Conductor" value="[Nombre]">
+                        <input type="text" id="congregationStudyTime" value="0:00" placeholder="Tiempo" style="width: 60px;">
+                    </div>
+                    <input type="text" id="congregationStudyReader" placeholder="Lector" value="[Nombre]">
+                </div>
+                <div class="form-group">
+                    <label>Canción Final</label>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="text" id="closingSong" value="[Número]">
+                        <input type="text" id="closingSongTime" value="0:00" placeholder="Tiempo" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Oración Final</label>
+                    <input type="text" id="closingPrayer" value="[Nombre]">
+                </div>
+            </fieldset>
+
+            <div class="actions">
+                <button onclick="window.print()" class="btn-primary">Imprimir / PDF</button>
+                <button onclick="exportToWord()" class="btn-secondary">Exportar a Word</button>
+            </div>
+        </aside>
+
+        <!-- PREVIEW PANEL -->
+        <main class="preview-container">
+            <div class="sheet-a4">
+                <!-- Program Copy 1 -->
+                <div class="program-card" id="programCopy1">
+                    <!-- Content injected by JS -->
+                </div>
+                
+                <!-- Separator -->
+                <div class="cut-line"></div>
+
+                <!-- Program Copy 2 -->
+                <div class="program-card" id="programCopy2">
+                    <!-- Content injected by JS (Clone) -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
