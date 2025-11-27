@@ -114,37 +114,47 @@ function getCurrentState() {
 function loadProgramStateToInputs() {
     const currentState = getCurrentState();
 
+    // Helper to set value or empty if matches placeholder
+    const setVal = (input, val) => {
+        if (!input) return;
+        if (val === input.placeholder) {
+            input.value = "";
+        } else {
+            input.value = val;
+        }
+    };
+
     // Map state to inputs
     inputs.congregationName.value = currentState.congregationName;
     inputs.programDateStart.value = currentState.programDateStart;
     inputs.programDateEnd.value = currentState.programDateEnd;
     inputs.weeklyReading.value = currentState.weeklyReading;
-    inputs.chairman.value = currentState.chairman;
+    setVal(inputs.chairman, currentState.chairman);
     inputs.auxCounselor.value = currentState.auxCounselor;
 
-    inputs.openingSong.value = currentState.openingSong;
+    setVal(inputs.openingSong, currentState.openingSong);
     inputs.openingSongTime.value = currentState.openingSongTime;
-    inputs.openingPrayer.value = currentState.openingPrayer;
+    setVal(inputs.openingPrayer, currentState.openingPrayer);
     inputs.openingPrayerTime.value = currentState.openingPrayerTime;
 
-    inputs.treasuresTalkTitle.value = currentState.treasures.talkTitle;
+    setVal(inputs.treasuresTalkTitle, currentState.treasures.talkTitle);
     inputs.treasuresTalkTime.value = currentState.treasures.talkTime;
-    inputs.treasuresTalkSpeaker.value = currentState.treasures.talkSpeaker;
-    inputs.gemsSpeaker.value = currentState.treasures.gemsSpeaker;
+    setVal(inputs.treasuresTalkSpeaker, currentState.treasures.talkSpeaker);
+    setVal(inputs.gemsSpeaker, currentState.treasures.gemsSpeaker);
     inputs.gemsTime.value = currentState.treasures.gemsTime;
-    inputs.bibleReadingStudent.value = currentState.treasures.bibleReadingStudent;
+    setVal(inputs.bibleReadingStudent, currentState.treasures.bibleReadingStudent);
     inputs.bibleReadingTime.value = currentState.treasures.bibleReadingTime;
 
-    inputs.middleSong.value = currentState.christianLife.middleSong;
+    setVal(inputs.middleSong, currentState.christianLife.middleSong);
     inputs.middleSongTime.value = currentState.christianLife.middleSongTime;
 
-    inputs.congregationStudyConductor.value = currentState.christianLife.conductor;
+    setVal(inputs.congregationStudyConductor, currentState.christianLife.conductor);
     inputs.congregationStudyTime.value = currentState.christianLife.studyTime;
-    inputs.congregationStudyReader.value = currentState.christianLife.reader;
+    setVal(inputs.congregationStudyReader, currentState.christianLife.reader);
 
-    inputs.closingSong.value = currentState.christianLife.closingSong;
+    setVal(inputs.closingSong, currentState.christianLife.closingSong);
     inputs.closingSongTime.value = currentState.christianLife.closingSongTime;
-    inputs.closingPrayer.value = currentState.christianLife.closingPrayer;
+    setVal(inputs.closingPrayer, currentState.christianLife.closingPrayer);
 }
 
 function bindInputs() {
@@ -160,38 +170,45 @@ function bindInputs() {
 
 function updateStateFromInput(key, value) {
     const currentState = getCurrentState();
+    const input = inputs[key];
+
+    // If value is empty and input has a bracketed placeholder, restore placeholder to state
+    let finalValue = value;
+    if (value === "" && input && input.placeholder && input.placeholder.startsWith("[")) {
+        finalValue = input.placeholder;
+    }
 
     // Map flat inputs to state structure
     if (key.startsWith('treasures')) {
         const subKey = key.replace('treasures', '');
         const prop = subKey.charAt(0).toLowerCase() + subKey.slice(1);
-        currentState.treasures[prop] = value;
+        currentState.treasures[prop] = finalValue;
     } else if (key === 'gemsSpeaker') {
-        currentState.treasures.gemsSpeaker = value;
+        currentState.treasures.gemsSpeaker = finalValue;
     } else if (key === 'gemsTime') {
-        currentState.treasures.gemsTime = value;
+        currentState.treasures.gemsTime = finalValue;
     } else if (key === 'bibleReadingStudent') {
-        currentState.treasures.bibleReadingStudent = value;
+        currentState.treasures.bibleReadingStudent = finalValue;
     } else if (key === 'bibleReadingTime') {
-        currentState.treasures.bibleReadingTime = value;
+        currentState.treasures.bibleReadingTime = finalValue;
     } else if (key === 'congregationStudyConductor') {
-        currentState.christianLife.conductor = value;
+        currentState.christianLife.conductor = finalValue;
     } else if (key === 'congregationStudyTime') {
-        currentState.christianLife.studyTime = value;
+        currentState.christianLife.studyTime = finalValue;
     } else if (key === 'congregationStudyReader') {
-        currentState.christianLife.reader = value;
+        currentState.christianLife.reader = finalValue;
     } else if (key === 'middleSong') {
-        currentState.christianLife.middleSong = value;
+        currentState.christianLife.middleSong = finalValue;
     } else if (key === 'middleSongTime') {
-        currentState.christianLife.middleSongTime = value;
+        currentState.christianLife.middleSongTime = finalValue;
     } else if (key === 'closingSong') {
-        currentState.christianLife.closingSong = value;
+        currentState.christianLife.closingSong = finalValue;
     } else if (key === 'closingSongTime') {
-        currentState.christianLife.closingSongTime = value;
+        currentState.christianLife.closingSongTime = finalValue;
     } else if (key === 'closingPrayer') {
-        currentState.christianLife.closingPrayer = value;
+        currentState.christianLife.closingPrayer = finalValue;
     } else if (currentState.hasOwnProperty(key)) {
-        currentState[key] = value;
+        currentState[key] = finalValue;
     }
 
     renderPreview();
@@ -211,11 +228,11 @@ function renderMinistryInputs() {
             <div style="display:flex; flex-direction:column; width:100%; gap:5px; border-bottom:1px solid #eee; padding-bottom:5px; margin-bottom:5px;">
                 <div style="display:flex; gap:5px;">
                     <span style="font-weight:bold; color:#dfae26;">${index + 4}.</span>
-                    <input type="text" placeholder="Título" value="${item.title}" oninput="updateMinistryItem(${index}, 'title', this.value)">
+                    <input type="text" placeholder="[Título]" value="${item.title === '[Título]' ? '' : item.title}" oninput="updateMinistryItem(${index}, 'title', this.value)">
                     <input type="text" placeholder="Tiempo" value="${item.time}" style="width:60px;" oninput="updateMinistryItem(${index}, 'time', this.value)">
                     <button class="btn-remove" onclick="removeMinistryItem(${index})">×</button>
                 </div>
-                <input type="text" placeholder="Estudiante/Ayudante" value="${item.student}" oninput="updateMinistryItem(${index}, 'student', this.value)">
+                <input type="text" placeholder="[Nombre/Nombre]" value="${item.student === '[Nombre/Nombre]' ? '' : item.student}" oninput="updateMinistryItem(${index}, 'student', this.value)">
             </div>
         `;
         container.appendChild(div);
@@ -224,7 +241,15 @@ function renderMinistryInputs() {
 
 function updateMinistryItem(index, field, value) {
     const currentState = getCurrentState();
-    currentState.ministryItems[index][field] = value;
+    const defaults = { title: "[Título]", time: "X mins.", student: "[Nombre/Nombre]" };
+
+    // If value is empty, restore default
+    let finalValue = value;
+    if (value === "" && defaults[field]) {
+        finalValue = defaults[field];
+    }
+
+    currentState.ministryItems[index][field] = finalValue;
     renderPreview();
 }
 
@@ -256,11 +281,11 @@ function renderChristianLifeInputs() {
         div.innerHTML = `
             <div style="display:flex; gap:5px; width:100%; align-items:center;">
                 <span style="font-weight:bold; color:#8a1c34;">${startIndex + index + 1}.</span>
-                <input type="text" placeholder="Título" value="${item.title}" oninput="updateChristianLifeItem(${index}, 'title', this.value)">
+                <input type="text" placeholder="[Título]" value="${item.title === '[Título]' ? '' : item.title}" oninput="updateChristianLifeItem(${index}, 'title', this.value)">
                 <input type="text" placeholder="Tiempo" value="${item.time}" style="width:60px;" oninput="updateChristianLifeItem(${index}, 'time', this.value)">
                 <button class="btn-remove" onclick="removeChristianLifeItem(${index})">×</button>
             </div>
-            <input type="text" placeholder="Responsable" value="${item.speaker}" style="margin-left: 20px; width: calc(100% - 20px);" oninput="updateChristianLifeItem(${index}, 'speaker', this.value)">
+            <input type="text" placeholder="[Nombre]" value="${item.speaker === '[Nombre]' ? '' : item.speaker}" style="margin-left: 20px; width: calc(100% - 20px);" oninput="updateChristianLifeItem(${index}, 'speaker', this.value)">
         `;
         container.appendChild(div);
     });
@@ -268,7 +293,15 @@ function renderChristianLifeInputs() {
 
 function updateChristianLifeItem(index, field, value) {
     const currentState = getCurrentState();
-    currentState.christianLife.items[index][field] = value;
+    const defaults = { title: "[Título]", time: "XX mins.", speaker: "[Nombre]" };
+
+    // If value is empty, restore default
+    let finalValue = value;
+    if (value === "" && defaults[field]) {
+        finalValue = defaults[field];
+    }
+
+    currentState.christianLife.items[index][field] = finalValue;
     renderPreview();
 }
 
@@ -444,6 +477,21 @@ function generateProgramHTML(programState) {
 }
 
 // --- Export Logic ---
+
+// --- PDF Generation ---
+
+function generatePDF() {
+    const element = document.querySelector('.sheet-a4');
+    const opt = {
+        margin: 0,
+        filename: 'programa_vida_ministerio.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save();
+}
 
 function exportToWord() {
     const content = `
