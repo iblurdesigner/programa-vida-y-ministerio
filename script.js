@@ -478,19 +478,20 @@ function generateProgramHTML(programState) {
 
 // --- Export Logic ---
 
-// --- PDF Generation ---
-
 function generatePDF() {
     const element = document.querySelector('.sheet-a4');
     const opt = {
         margin: 0,
         filename: 'programa_vida_ministerio.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
+        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    html2pdf().set(opt).from(element).save();
+    html2pdf().set(opt).from(element).save().catch(err => {
+        console.error("PDF generation failed:", err);
+        alert("Error al generar el PDF. Por favor, intente de nuevo.");
+    });
 }
 
 function exportToWord() {
