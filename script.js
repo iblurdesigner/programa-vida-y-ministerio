@@ -8,38 +8,38 @@ const defaultProgramState = {
     auxCounselor: "Asdrúbal Ayala",
 
     openingSong: "[Número]",
-    openingSongTime: "0:00",
+    openingSongTime: "19:00",
     openingPrayer: "[Nombre]",
-    openingPrayerTime: "0:00",
+    openingPrayerTime: "19:04",
 
     treasures: {
         talkTitle: "[Título]",
-        talkTime: "0:00",
+        talkTime: "19:05",
         talkSpeaker: "[Nombre]",
         gemsSpeaker: "[Nombre]",
-        gemsTime: "0:00",
+        gemsTime: "19:15",
         bibleReadingStudent: "[Nombre]",
-        bibleReadingTime: "0:00"
+        bibleReadingTime: "19:25"
     },
 
     ministryItems: [
-        { type: "Asignación", title: "[Título]", time: "X mins.", student: "[Nombre/Nombre]" },
-        { type: "Asignación", title: "[Título]", time: "X mins.", student: "[Nombre/Nombre]" },
-        { type: "Asignación", title: "[Título]", time: "X mins.", student: "[Nombre/Nombre]" }
+        { type: "Asignación", title: "[Título]", time: "X mins.", student: "[Nombre/Nombre]", startTime: "19:30" },
+        { type: "Asignación", title: "[Título]", time: "X mins.", student: "[Nombre/Nombre]", startTime: "19:34" },
+        { type: "Asignación", title: "[Título]", time: "X mins.", student: "[Nombre/Nombre]", startTime: "19:38" }
     ],
 
     christianLife: {
         middleSong: "[Número]",
-        middleSongTime: "0:00",
+        middleSongTime: "19:45",
         items: [
-            { title: "[Título]", time: "XX mins.", speaker: "[Nombre]" },
-            { title: "[Título]", time: "XX mins.", speaker: "[Nombre]" }
+            { title: "[Título]", time: "XX mins.", speaker: "[Nombre]", startTime: "19:54" }
         ],
         conductor: "[Nombre/Nombre]",
-        studyTime: "0:00",
+        studyTime: "20:03",
         reader: "[Nombre/Nombre]",
+        closingCommentsTime: "20:33",
         closingSong: "[Número]",
-        closingSongTime: "0:00",
+        closingSongTime: "20:36",
         closingPrayer: "[Nombre]"
     }
 };
@@ -86,7 +86,8 @@ const inputs = {
 
     closingSong: document.getElementById('closingSong'),
     closingSongTime: document.getElementById('closingSongTime'),
-    closingPrayer: document.getElementById('closingPrayer')
+    closingPrayer: document.getElementById('closingPrayer'),
+    closingCommentsTime: document.getElementById('closingCommentsTime')
 };
 
 // Initialize
@@ -155,6 +156,7 @@ function loadProgramStateToInputs() {
     setVal(inputs.closingSong, currentState.christianLife.closingSong);
     inputs.closingSongTime.value = currentState.christianLife.closingSongTime;
     setVal(inputs.closingPrayer, currentState.christianLife.closingPrayer);
+    inputs.closingCommentsTime.value = currentState.christianLife.closingCommentsTime || "20:33";
 }
 
 function bindInputs() {
@@ -207,6 +209,8 @@ function updateStateFromInput(key, value) {
         currentState.christianLife.closingSongTime = finalValue;
     } else if (key === 'closingPrayer') {
         currentState.christianLife.closingPrayer = finalValue;
+    } else if (key === 'closingCommentsTime') {
+        currentState.christianLife.closingCommentsTime = finalValue;
     } else if (currentState.hasOwnProperty(key)) {
         currentState[key] = finalValue;
     }
@@ -228,6 +232,7 @@ function renderMinistryInputs() {
             <div style="display:flex; flex-direction:column; width:100%; gap:5px; border-bottom:1px solid #eee; padding-bottom:5px; margin-bottom:5px;">
                 <div style="display:flex; gap:5px;">
                     <span style="font-weight:bold; color:#dfae26;">${index + 4}.</span>
+                    <input type="time" value="${item.startTime || ''}" style="width:90px;" oninput="updateMinistryItem(${index}, 'startTime', this.value)">
                     <input type="text" placeholder="[Título]" value="${item.title === '[Título]' ? '' : item.title}" oninput="updateMinistryItem(${index}, 'title', this.value)">
                     <input type="text" placeholder="Tiempo" value="${item.time}" style="width:60px;" oninput="updateMinistryItem(${index}, 'time', this.value)">
                     <button class="btn-remove" onclick="removeMinistryItem(${index})">×</button>
@@ -241,7 +246,7 @@ function renderMinistryInputs() {
 
 function updateMinistryItem(index, field, value) {
     const currentState = getCurrentState();
-    const defaults = { title: "[Título]", time: "X mins.", student: "[Nombre/Nombre]" };
+    const defaults = { title: "[Título]", time: "X mins.", student: "[Nombre/Nombre]", startTime: "" };
 
     // If value is empty, restore default
     let finalValue = value;
@@ -255,7 +260,7 @@ function updateMinistryItem(index, field, value) {
 
 function addMinistryItem() {
     const currentState = getCurrentState();
-    currentState.ministryItems.push({ type: "Asignación", title: "[Título]", time: "X mins.", student: "[Nombre/Nombre]" });
+    currentState.ministryItems.push({ type: "Asignación", title: "[Título]", time: "X mins.", student: "[Nombre/Nombre]", startTime: "" });
     renderMinistryInputs();
     renderPreview();
 }
@@ -281,6 +286,7 @@ function renderChristianLifeInputs() {
         div.innerHTML = `
             <div style="display:flex; gap:5px; width:100%; align-items:center;">
                 <span style="font-weight:bold; color:#8a1c34;">${startIndex + index + 1}.</span>
+                <input type="time" value="${item.startTime || ''}" style="width:90px;" oninput="updateChristianLifeItem(${index}, 'startTime', this.value)">
                 <input type="text" placeholder="[Título]" value="${item.title === '[Título]' ? '' : item.title}" oninput="updateChristianLifeItem(${index}, 'title', this.value)">
                 <input type="text" placeholder="Tiempo" value="${item.time}" style="width:60px;" oninput="updateChristianLifeItem(${index}, 'time', this.value)">
                 <button class="btn-remove" onclick="removeChristianLifeItem(${index})">×</button>
@@ -293,7 +299,7 @@ function renderChristianLifeInputs() {
 
 function updateChristianLifeItem(index, field, value) {
     const currentState = getCurrentState();
-    const defaults = { title: "[Título]", time: "XX mins.", speaker: "[Nombre]" };
+    const defaults = { title: "[Título]", time: "XX mins.", speaker: "[Nombre]", startTime: "" };
 
     // If value is empty, restore default
     let finalValue = value;
@@ -307,7 +313,7 @@ function updateChristianLifeItem(index, field, value) {
 
 function addChristianLifeItem() {
     const currentState = getCurrentState();
-    currentState.christianLife.items.push({ title: "[Título]", time: "XX mins.", speaker: "[Nombre]" });
+    currentState.christianLife.items.push({ title: "[Título]", time: "XX mins.", speaker: "[Nombre]", startTime: "" });
     renderChristianLifeInputs();
     renderPreview();
 }
@@ -356,7 +362,7 @@ function generateProgramHTML(programState) {
     programState.ministryItems.forEach((item, index) => {
         ministryHTML += `
             <div class="program-item">
-                <div class="time">0:00</div>
+                <div class="time">${item.startTime || '0:00'}</div>
                 <div><strong>${index + 4}. ${item.title}</strong> (${item.time})</div>
                 <div class="role-label">Estudiante/Ayudante:</div>
                 <div class="name">${item.student}</div>
@@ -370,7 +376,7 @@ function generateProgramHTML(programState) {
     programState.christianLife.items.forEach((item, index) => {
         christianLifeHTML += `
             <div class="program-item">
-                <div class="time">0:00</div>
+                <div class="time">${item.startTime || '0:00'}</div>
                 <div><strong>${clStartIndex + index + 1}. ${item.title}</strong> (${item.time})</div>
                 <div class="role-label"></div>
                 <div class="name">${item.speaker}</div>
@@ -463,7 +469,7 @@ function generateProgramHTML(programState) {
                 <div class="name">${programState.christianLife.conductor}<br>${programState.christianLife.reader}</div>
             </div>
             <div class="program-item">
-                <div class="time">0:00</div>
+                <div class="time">${programState.christianLife.closingCommentsTime || '20:33'}</div>
                 <div>• Palabras de conclusión (3 min.)</div>
             </div>
             <div class="program-item song">
