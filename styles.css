@@ -236,7 +236,7 @@ fieldset legend {
     background: #374151;
     padding: 1.5rem;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     overflow-y: auto;
     background-image: radial-gradient(#4b5563 1px, transparent 1px);
     background-size: 20px 20px;
@@ -346,12 +346,14 @@ fieldset legend {
 
 .program-item {
     display: grid;
-    grid-template-columns: 40px 1fr auto 80px;
-    /* Increased time and name columns, better spacing */
+    grid-template-columns: 40px minmax(0, 1fr) auto 200px;
+    /* Time, content (limited), role label, names (wider) */
     gap: 5px;
     /* Increased gap for better separation */
-    margin-bottom: 0px;
-    align-items: baseline;
+    margin-bottom: 2px;
+    /* Add spacing between rows to prevent overlap */
+    align-items: start;
+    /* Changed from baseline to start to handle wrapped text better */
 }
 
 .program-item.song {
@@ -369,18 +371,25 @@ fieldset legend {
     text-align: right;
     color: #666;
     font-size: 0.8em;
+    white-space: nowrap;
+    /* Prevent wrapping to multiple lines */
 }
 
 .program-item .name {
     font-weight: normal;
     text-align: left;
+    white-space: nowrap;
+    /* Keep names on a single line */
+    overflow: visible;
+    /* Allow text to be fully visible */
+    line-height: 1.2;
 }
 
 .treasures-grid .program-item,
 .ministry-grid .program-item,
 .christian-life-grid .program-item {
-    grid-template-columns: 40px 1fr auto 80px;
-    /* Match updated column widths */
+    grid-template-columns: 40px minmax(0, 1fr) auto 200px;
+    /* Match updated column widths: Time, content (limited), role label, names (wider) */
 }
 
 /* --- PRINT STYLES --- */
@@ -422,5 +431,10 @@ fieldset legend {
         height: auto;
         padding: 5mm;
         transform: none !important;
+    }
+
+    .father {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
     }
 }
