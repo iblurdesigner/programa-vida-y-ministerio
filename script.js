@@ -284,14 +284,16 @@ function renderChristianLifeInputs() {
         const div = document.createElement('div');
         div.className = 'item-row';
         div.innerHTML = `
-            <div style="display:flex; gap:5px; width:100%; align-items:center;">
-                <span style="font-weight:bold; color:#8a1c34;">${startIndex + index + 1}.</span>
-                <input type="time" value="${item.startTime || ''}" style="width:90px;" oninput="updateChristianLifeItem(${index}, 'startTime', this.value)">
-                <input type="text" placeholder="[Título]" value="${item.title === '[Título]' ? '' : item.title}" oninput="updateChristianLifeItem(${index}, 'title', this.value)">
-                <input type="text" placeholder="Tiempo" value="${item.time}" style="width:60px;" oninput="updateChristianLifeItem(${index}, 'time', this.value)">
-                <button class="btn-remove" onclick="removeChristianLifeItem(${index})">×</button>
+            <div style="display:flex; flex-direction:column; width:100%; gap:5px;">
+                <div style="display:flex; gap:5px; width:100%; align-items:center;">
+                    <span style="font-weight:bold; color:#8a1c34;">${startIndex + index + 1}.</span>
+                    <input type="time" value="${item.startTime || ''}" style="width:90px;" oninput="updateChristianLifeItem(${index}, 'startTime', this.value)">
+                    <input type="text" placeholder="[Título]" value="${item.title === '[Título]' ? '' : item.title}" oninput="updateChristianLifeItem(${index}, 'title', this.value)">
+                    <input type="text" placeholder="Tiempo" value="${item.time}" style="width:60px;" oninput="updateChristianLifeItem(${index}, 'time', this.value)">
+                    <button class="btn-remove" onclick="removeChristianLifeItem(${index})">×</button>
+                </div>
+                <input type="text" placeholder="[Nombre]" value="${item.speaker === '[Nombre]' ? '' : item.speaker}" style="margin-left: 20px; width: calc(100% - 20px);" oninput="updateChristianLifeItem(${index}, 'speaker', this.value)">
             </div>
-            <input type="text" placeholder="[Nombre]" value="${item.speaker === '[Nombre]' ? '' : item.speaker}" style="margin-left: 20px; width: calc(100% - 20px);" oninput="updateChristianLifeItem(${index}, 'speaker', this.value)">
         `;
         container.appendChild(div);
     });
@@ -500,30 +502,122 @@ function generatePDF() {
     });
 }
 
+function generateWordMarkup(programState) {
+    const tableStyle = 'width: 100%; border-collapse: collapse; font-family: Helvetica, Arial, sans-serif; font-size: 10pt;';
+    const tdStyle = 'padding: 4px 2px; vertical-align: top;';
+    const headerStyle = 'background-color: #5f6368; color: white; font-weight: bold; padding: 6px; font-size: 10pt; text-transform: uppercase;';
+    const goldStyle = 'background-color: #dfae26; color: white; font-weight: bold; padding: 6px; font-size: 10pt; text-transform: uppercase;';
+    const redStyle = 'background-color: #8a1c34; color: white; font-weight: bold; padding: 6px; font-size: 10pt; text-transform: uppercase;';
+
+    // Helper to format rows
+    const createRow = (time, content, role, name, boldRole = false) => `
+        <tr>
+            <td style="${tdStyle} width: 45px; color:#555;">${time}</td>
+            <td style="${tdStyle}">${content}</td>
+            <td style="${tdStyle} text-align: right; color: #666; font-size: 9pt; width: 100px;">${role}</td>
+            <td style="${tdStyle} width: 140px;">${name}</td>
+        </tr>
+    `;
+
+    let html = `<table style="${tableStyle}">`;
+
+    // Header
+    html += `
+        <tr>
+            <td colspan="4" style="border-bottom: 2px solid black; padding-bottom: 8px;">
+                <table style="width:100%;">
+                    <tr>
+                        <td style="font-size:14pt; font-weight:bold; text-transform:uppercase;">${programState.congregationName}</td>
+                        <td style="font-size:12pt; font-weight:bold; text-align:right; font-family:serif;">Programa para la reunión de entre semana</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" style="text-align: right; padding-top: 5px; padding-bottom: 5px; font-size: 9pt; color: #555;">
+                <table style="width:100%">
+                    <tr>
+                        <td style="text-align:right;">
+                            Presidente: <span style="color:black; font-weight:normal;">${programState.chairman}</span><br>
+                            Consejero de la sala auxiliar: <span style="color:black; font-weight:normal;">${programState.auxCounselor}</span>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" style="border-bottom: 1px solid #ccc; font-weight: bold; padding: 6px 0; margin-bottom: 10px;">
+                ${formatDateRange(programState.programDateStart, programState.programDateEnd)} | ${programState.weeklyReading}
+            </td>
+        </tr>
+        <tr><td colspan="4" style="height: 10px;"></td></tr>
+    `;
+
+    // Opening
+    html += createRow(programState.openingSongTime, `<b>• Canción ${programState.openingSong}</b>`, '', '');
+    html += createRow(programState.openingPrayerTime, '• Palabras de introducción (1 min.)', 'Oración:', programState.openingPrayer);
+
+    // Treasures
+    html += `<tr><td colspan="4" style="${headerStyle}">TESOROS DE LA BIBLIA</td></tr>`;
+    html += createRow(programState.treasures.talkTime, `<b>1. ${programState.treasures.talkTitle}</b> (10 mins.)`, '', programState.treasures.talkSpeaker);
+    html += createRow(programState.treasures.gemsTime, `<b>2. Busquemos perlas escondidas</b> (10 mins.)`, '', programState.treasures.gemsSpeaker);
+    html += createRow(programState.treasures.bibleReadingTime, `<b>3. Lectura de la Biblia</b> (4 mins.)`, 'Estudiante:', programState.treasures.bibleReadingStudent);
+
+    // Ministry
+    html += `<tr><td colspan="4" style="${goldStyle}">SEAMOS MEJORES MAESTROS</td></tr>`;
+    programState.ministryItems.forEach((item, index) => {
+        html += createRow(
+            item.startTime || '0:00',
+            `<b>${index + 4}. ${item.title}</b> (${item.time})`,
+            'Estudiante/Ayudante:',
+            item.student
+        );
+    });
+
+    // Christian Life
+    html += `<tr><td colspan="4" style="${redStyle}">NUESTRA VIDA CRISTIANA</td></tr>`;
+    html += createRow(programState.christianLife.middleSongTime, `<b>• Canción ${programState.christianLife.middleSong}</b>`, '', '');
+
+    let clStartIndex = 3 + programState.ministryItems.length;
+    programState.christianLife.items.forEach((item, index) => {
+        html += createRow(
+            item.startTime || '0:00',
+            `<b>${clStartIndex + index + 1}. ${item.title}</b> (${item.time})`,
+            '',
+            item.speaker
+        );
+    });
+
+    let studyNumber = clStartIndex + programState.christianLife.items.length + 1;
+    html += createRow(programState.christianLife.studyTime, `<b>${studyNumber}. Estudio bíblico de la congregación</b> (30 mins.)`, 'Conductor/Lector:', `${programState.christianLife.conductor}<br>${programState.christianLife.reader}`);
+    html += createRow(programState.christianLife.closingCommentsTime || '20:33', '• Palabras de conclusión (3 min.)', '', '');
+    html += createRow(programState.christianLife.closingSongTime, `<b>• Canción ${programState.christianLife.closingSong}</b>`, 'Oración:', programState.christianLife.closingPrayer);
+
+    html += `</table>`;
+    return html;
+}
+
 function exportToWord() {
     const content = `
         <!DOCTYPE html>
         <html>
         <head>
+            <meta charset="UTF-8">
             <style>
-                body { font-family: 'Arial', sans-serif; font-size: 10pt; }
-                .header-row { border-bottom: 2px solid black; margin-bottom: 10px; }
-                .section-header { background-color: #555; color: white; font-weight: bold; padding: 2px; margin-top: 10px; }
-                .bg-gold { background-color: #dfae26; }
-                .bg-red { background-color: #8a1c34; }
-                table { width: 100%; border-collapse: collapse; }
-                td { vertical-align: top; padding: 2px; }
+                body { font-family: 'Helvetica', 'Arial', sans-serif; }
             </style>
         </head>
         <body>
-            ${generateProgramHTML(state.program1)}
-            <br><br><hr><br><br>
-            ${generateProgramHTML(state.program2)}
+            ${generateWordMarkup(state.program1)}
+            <br><br><br>
+            <div style="border-top: 1px dashed #999; margin: 20px 0;"></div>
+            <br><br><br>
+            ${generateWordMarkup(state.program2)}
         </body>
         </html>
     `;
 
-    const converted = htmlDocx.asBlob(content);
+    const converted = htmlDocx.asBlob(content, { orientation: 'portrait' });
     saveAs(converted, 'programa_vida_ministerio.docx');
 }
 
