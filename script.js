@@ -487,18 +487,47 @@ function generateProgramHTML(programState) {
 // --- Export Logic ---
 
 function generatePDF() {
-    const element = document.querySelector('.sheet-a4');
+    // Clone the element to manipulate it for export without affecting the UI
+    const originalElement = document.querySelector('.sheet-a4');
+    const clone = originalElement.cloneNode(true);
+
+    // Create a container to simulate the PDF page width (A4 - 2*margins)
+    // 210mm width - 20mm margins = 190mm content width
+    const container = document.createElement('div');
+    container.style.width = '190mm';
+    container.style.position = 'absolute';
+    container.style.top = '-9999px'; // Hide from view
+    container.style.left = '0';
+    container.style.background = 'white';
+
+    // Adjust clone styles to fit container
+    clone.style.width = '100%';
+    clone.style.height = 'auto'; // allow height to fit content
+    clone.style.margin = '0';
+    clone.style.padding = '0'; // padding handled by container or PDF margin
+    clone.style.boxShadow = 'none';
+    clone.style.transform = 'none'; // remove zoom scaling from preview
+
+    container.appendChild(clone);
+    document.body.appendChild(container);
+
     const opt = {
-        margin: 0,
+        margin: 10, // 10mm margins
         filename: 'programa_vida_ministerio.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true, letterRendering: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: 'avoid-all' } // Attempt to keep on one page
     };
 
-    html2pdf().set(opt).from(element).save().catch(err => {
+    html2pdf().set(opt).from(clone).save().then(() => {
+        document.body.removeChild(container);
+    }).catch(err => {
         console.error("PDF generation failed:", err);
         alert("Error al generar el PDF. Por favor, intente de nuevo.");
+        if (document.body.contains(container)) {
+            document.body.removeChild(container);
+        }
     });
 }
 
