@@ -34,9 +34,9 @@ const defaultProgramState = {
         items: [
             { title: "[Título]", time: "XX mins.", speaker: "[Nombre]", startTime: "19:54" }
         ],
-        conductor: "[Nombre/Nombre]",
+        conductor: "[Nombre]",
         studyTime: "20:03",
-        reader: "[Nombre/Nombre]",
+        reader: "[Nombre]",
         closingCommentsTime: "20:33",
         closingSong: "[Número]",
         closingSongTime: "20:36",
