@@ -50,11 +50,10 @@ function createInitialState() {
 }
 
 const state = {
-    currentProgram: 'program1', // 'program1', 'program2', 'program3', or 'program4'
+    currentProgram: 'program1', // 'program1', 'program2', or 'program3'
     program1: createInitialState(),
     program2: createInitialState(),
-    program3: createInitialState(),
-    program4: createInitialState()
+    program3: createInitialState()
 };
 
 // DOM Elements
@@ -335,7 +334,6 @@ function renderPreview() {
     document.getElementById('programCopy1').innerHTML = generateProgramHTML(state.program1);
     document.getElementById('programCopy2').innerHTML = generateProgramHTML(state.program2);
     document.getElementById('programCopy3').innerHTML = generateProgramHTML(state.program3);
-    document.getElementById('programCopy4').innerHTML = generateProgramHTML(state.program4);
 }
 
 function formatDateRange(startStr, endStr) {
@@ -491,38 +489,75 @@ function generateProgramHTML(programState) {
 // --- Export Logic ---
 
 function generatePDF() {
-    // Single sheet now contains all 4 programs vertically stacked.
+    // The .sheet-a4 element already contains the rendered preview (static HTML, not inputs)
+    // We just need to clone it and generate the PDF
     const element = document.querySelector('.sheet-a4');
 
+    if (!element) {
+        alert('No se encontró contenido para exportar.');
+        return;
+    }
+
+    // Clone the element
+    const clone = element.cloneNode(true);
+
+    // Create a temporary container
+    const container = document.createElement('div');
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    container.style.top = '0';
+    container.style.width = '210mm';
+    container.style.background = 'white';
+
+    // Style the clone
+    clone.style.width = '210mm';
+    clone.style.minHeight = '297mm';
+    clone.style.margin = '0';
+    clone.style.boxShadow = 'none';
+    clone.style.transform = 'none';
+
+    container.appendChild(clone);
+    document.body.appendChild(container);
+
     const opt = {
-        margin: 5, // Narrow margins
-        filename: 'programa_vida_ministerio_compact.pdf',
+        margin: 0,
+        filename: 'programa_vida_ministerio.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 3, useCORS: true, letterRendering: true }, // Higher scale for small text
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            letterRendering: true,
+            logging: false
+        },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: { mode: 'avoid-all' }
     };
 
-    html2pdf().set(opt).from(element).save().catch(err => {
-        console.error("PDF generation failed:", err);
-        alert("Error al generar el PDF.");
+    html2pdf().set(opt).from(clone).save().then(() => {
+        document.body.removeChild(container);
+    }).catch(err => {
+        console.error("PDF generation error:", err);
+        alert("Error al generar el PDF. Por favor, intente de nuevo.");
+        if (document.body.contains(container)) {
+            document.body.removeChild(container);
+        }
     });
 }
 
 function generateWordMarkup(programState) {
-    const tableStyle = 'width: 100%; border-collapse: collapse; font-family: Helvetica, Arial, sans-serif; font-size: 6pt;';
-    const tdStyle = 'padding: 1px 1px; vertical-align: top;';
-    const headerStyle = 'background-color: #5f6368; color: white; font-weight: bold; padding: 2px; font-size: 6pt; text-transform: uppercase;';
-    const goldStyle = 'background-color: #dfae26; color: white; font-weight: bold; padding: 2px; font-size: 6pt; text-transform: uppercase;';
-    const redStyle = 'background-color: #8a1c34; color: white; font-weight: bold; padding: 2px; font-size: 6pt; text-transform: uppercase;';
+    const tableStyle = 'width: 100%; border-collapse: collapse; font-family: Helvetica, Arial, sans-serif; font-size: 9pt;';
+    const tdStyle = 'padding: 2px 2px; vertical-align: top;';
+    const headerStyle = 'background-color: #5f6368; color: white; font-weight: bold; padding: 4px; font-size: 9pt; text-transform: uppercase;';
+    const goldStyle = 'background-color: #dfae26; color: white; font-weight: bold; padding: 4px; font-size: 9pt; text-transform: uppercase;';
+    const redStyle = 'background-color: #8a1c34; color: white; font-weight: bold; padding: 4px; font-size: 9pt; text-transform: uppercase;';
 
     // Helper to format rows
     const createRow = (time, content, role, name, boldRole = false) => `
         <tr>
-            <td style="${tdStyle} width: 20px; color:#555;">${time}</td>
+            <td style="${tdStyle} width: 45px; color:#555;">${time}</td>
             <td style="${tdStyle}">${content}</td>
-            <td style="${tdStyle} text-align: right; color: #666; font-size: 6pt; width: 50px;">${role}</td>
-            <td style="${tdStyle} width: 70px;">${name}</td>
+            <td style="${tdStyle} text-align: right; color: #666; font-size: 9pt; width: 100px;">${role}</td>
+            <td style="${tdStyle} width: 140px;">${name}</td>
         </tr>
     `;
 
@@ -624,12 +659,10 @@ function exportToWord() {
         </head>
         <body>
             ${generateWordMarkup(state.program1)}
-            <div style="height: 4px; border-bottom: 1px dashed #999; margin: 4px 0;"></div>
+            <div style="height: 10px; border-bottom: 1px dashed #999; margin: 15px 0;"></div>
             ${generateWordMarkup(state.program2)}
-            <div style="height: 4px; border-bottom: 1px dashed #999; margin: 4px 0;"></div>
+            <div style="height: 10px; border-bottom: 1px dashed #999; margin: 15px 0;"></div>
             ${generateWordMarkup(state.program3)}
-            <div style="height: 4px; border-bottom: 1px dashed #999; margin: 4px 0;"></div>
-            ${generateWordMarkup(state.program4)}
         </body>
         </html>
     `;
