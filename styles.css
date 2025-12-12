@@ -269,7 +269,8 @@ fieldset legend {
     flex: 1;
     background: #374151;
     /* Darker backdrop for contrast */
-    padding: 3rem;
+    padding: 1.5rem;
+    /* Reduced padding to give more space */
     display: flex;
     justify-content: center;
     overflow-y: auto;
@@ -287,6 +288,12 @@ fieldset legend {
     /* Deeper shadow */
     display: flex;
     flex-direction: column;
+
+    /* Scale up for better visibility */
+    transform: scale(1.15);
+    transform-origin: top center;
+    margin-bottom: 5rem;
+    /* Space for the bottom of the scaled sheet */
 
     /* Font styles for the content itself need to be explicit if they rely on body */
     font-family: 'Noto Sans', sans-serif;
