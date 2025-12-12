@@ -24,12 +24,18 @@
             <!-- Program Selector -->
             <div class="form-group" style="background: #e8f0fe; padding: 10px; border-radius: 4px;">
                 <label style="margin-bottom: 5px;">Seleccionar Programa a Editar:</label>
-                <div style="display: flex; gap: 15px;">
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
                     <label style="font-weight: normal; cursor: pointer;">
-                        <input type="radio" name="programSelector" value="program1" checked onchange="switchProgram('program1')"> Programa 1 (Arriba)
+                        <input type="radio" name="programSelector" value="program1" checked onchange="switchProgram('program1')"> Programa 1 (Pág 1 Arriba)
                     </label>
                     <label style="font-weight: normal; cursor: pointer;">
-                        <input type="radio" name="programSelector" value="program2" onchange="switchProgram('program2')"> Programa 2 (Abajo)
+                        <input type="radio" name="programSelector" value="program2" onchange="switchProgram('program2')"> Programa 2 (Pág 1 Abajo)
+                    </label>
+                    <label style="font-weight: normal; cursor: pointer;">
+                        <input type="radio" name="programSelector" value="program3" onchange="switchProgram('program3')"> Programa 3 (Pág 2 Arriba)
+                    </label>
+                    <label style="font-weight: normal; cursor: pointer;">
+                        <input type="radio" name="programSelector" value="program4" onchange="switchProgram('program4')"> Programa 4 (Pág 2 Abajo)
                     </label>
                 </div>
             </div>
@@ -159,19 +165,15 @@
 
         <!-- PREVIEW PANEL -->
         <main class="preview-container">
+            <!-- Single Sheet for all 4 programs (Vertical Stack) -->
             <div class="sheet-a4">
-                <!-- Program Copy 1 -->
-                <div class="program-card" id="programCopy1">
-                    <!-- Content injected by JS -->
-                </div>
-                
-                <!-- Separator -->
+                <div class="program-card" id="programCopy1"></div>
                 <div class="cut-line"></div>
-
-                <!-- Program Copy 2 -->
-                <div class="program-card" id="programCopy2">
-                    <!-- Content injected by JS (Clone) -->
-                </div>
+                <div class="program-card" id="programCopy2"></div>
+                <div class="cut-line"></div>
+                <div class="program-card" id="programCopy3"></div>
+                <div class="cut-line"></div>
+                <div class="program-card" id="programCopy4"></div>
             </div>
         </main>
     </div>
