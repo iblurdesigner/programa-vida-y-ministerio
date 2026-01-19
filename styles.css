@@ -248,17 +248,17 @@ fieldset legend {
     min-height: 297mm;
     /* Standard A4 height */
     height: auto;
-    padding: 8mm;
-    /* Reduced padding to fit content on one page */
+    padding: 10mm;
+    /* Balanced padding for 2 programs with room for additions */
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
 }
 
-/* Font Sizing for 3-stack */
+/* Font Sizing for 2-stack */
 .program-card {
-    font-size: 8.5pt;
-    line-height: 1.1;
+    font-size: 9pt;
+    line-height: 1.2;
     width: 100%;
 }
 
@@ -267,8 +267,8 @@ fieldset legend {
     height: 1px;
     background: #ccc;
     border-bottom: 1px dashed #999;
-    margin: 8px 0;
-    /* Reduced margin to save space */
+    margin: 10px 0;
+    /* Balanced margin for spacing */
 }
 
 /* Internal Styles */
@@ -277,8 +277,8 @@ fieldset legend {
     justify-content: space-between;
     align-items: baseline;
     border-bottom: 1px solid black;
-    padding-bottom: 1px;
-    margin-bottom: 0px;
+    padding-bottom: 2px;
+    margin-bottom: 1px;
 }
 
 .congregation-name {
@@ -297,16 +297,16 @@ fieldset legend {
     display: flex;
     justify-content: space-between;
     font-weight: bold;
-    margin-bottom: 0px;
+    margin-bottom: 1px;
     border-bottom: 1px solid #ccc;
-    padding-bottom: 0px;
+    padding-bottom: 1px;
 }
 
 .top-info {
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 0px 5px;
-    margin-bottom: 1px;
+    margin-bottom: 2px;
     text-align: right;
 }
 
@@ -323,11 +323,11 @@ fieldset legend {
 .section-header {
     color: white;
     font-weight: bold;
-    padding: 1px 4px;
+    padding: 2px 5px;
     text-transform: uppercase;
     font-size: 0.95em;
-    margin-top: 1px;
-    margin-bottom: 0px;
+    margin-top: 2px;
+    margin-bottom: 2px;
     display: flex;
     justify-content: space-between;
 }
@@ -348,10 +348,10 @@ fieldset legend {
     display: grid;
     grid-template-columns: 40px minmax(0, 1fr) auto 200px;
     /* Time, content (limited), role label, names (wider) */
-    gap: 4px;
-    /* Reduced gap to save space */
-    margin-bottom: 1px;
-    /* Reduced spacing between rows */
+    gap: 5px;
+    /* Balanced gap for spacing */
+    margin-bottom: 2px;
+    /* Balanced spacing between rows */
     align-items: start;
     /* Changed from baseline to start to handle wrapped text better */
 }
@@ -429,27 +429,27 @@ fieldset legend {
         margin: 0;
         width: 100%;
         height: auto;
-        padding: 6mm;
+        padding: 8mm;
         transform: none !important;
     }
     
     .program-card {
-        font-size: 8pt;
-        line-height: 1.08;
+        font-size: 8.5pt;
+        line-height: 1.15;
     }
     
     .cut-line {
-        margin: 6px 0;
+        margin: 8px 0;
     }
     
     .program-item {
-        margin-bottom: 0.5px;
-        gap: 3px;
+        margin-bottom: 1.5px;
+        gap: 4px;
     }
     
     .section-header {
-        padding: 1px 3px;
-        font-size: 0.9em;
+        padding: 2px 4px;
+        font-size: 0.95em;
     }
 
     .father {

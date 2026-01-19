@@ -22,7 +22,12 @@ const defaultProgramState = {
         bibleReadingTime: "19:25"
     },
 
-    ministryItems: [
+    ministryItemsAuditorio: [
+        { type: "Asignación", title: "[Título]", time: "X mins.", student: "[Nombre/Nombre]", startTime: "19:30" },
+        { type: "Asignación", title: "[Título]", time: "X mins.", student: "[Nombre/Nombre]", startTime: "19:34" },
+        { type: "Asignación", title: "[Título]", time: "X mins.", student: "[Nombre/Nombre]", startTime: "19:38" }
+    ],
+    ministryItemsSalaAuxiliar: [
         { type: "Asignación", title: "[Título]", time: "X mins.", student: "[Nombre/Nombre]", startTime: "19:30" },
         { type: "Asignación", title: "[Título]", time: "X mins.", student: "[Nombre/Nombre]", startTime: "19:34" },
         { type: "Asignación", title: "[Título]", time: "X mins.", student: "[Nombre/Nombre]", startTime: "19:38" }
@@ -50,10 +55,9 @@ function createInitialState() {
 }
 
 const state = {
-    currentProgram: 'program1', // 'program1', 'program2', or 'program3'
+    currentProgram: 'program1', // 'program1' or 'program2'
     program1: createInitialState(),
-    program2: createInitialState(),
-    program3: createInitialState()
+    program2: createInitialState()
 };
 
 // DOM Elements
@@ -95,7 +99,8 @@ const inputs = {
 function init() {
     bindInputs();
     loadProgramStateToInputs(); // Load initial state to inputs
-    renderMinistryInputs();
+    renderMinistryInputsAuditorio();
+    renderMinistryInputsSalaAuxiliar();
     renderChristianLifeInputs();
     renderPreview();
 }
@@ -103,7 +108,8 @@ function init() {
 function switchProgram(programId) {
     state.currentProgram = programId;
     loadProgramStateToInputs();
-    renderMinistryInputs();
+    renderMinistryInputsAuditorio();
+    renderMinistryInputsSalaAuxiliar();
     renderChristianLifeInputs();
     // No need to renderPreview here as inputs didn't change the preview, 
     // but we might want to highlight which one is being edited if we add that UI later.
@@ -221,31 +227,57 @@ function updateStateFromInput(key, value) {
 
 // --- Dynamic Sections Logic ---
 
-function renderMinistryInputs() {
-    const container = document.getElementById('ministryItems');
+function renderMinistryInputsAuditorio() {
+    const container = document.getElementById('ministryItemsAuditorio');
+    if (!container) return;
     container.innerHTML = '';
     const currentState = getCurrentState();
 
-    currentState.ministryItems.forEach((item, index) => {
+    currentState.ministryItemsAuditorio.forEach((item, index) => {
         const div = document.createElement('div');
         div.className = 'item-row';
         div.innerHTML = `
             <div style="display:flex; flex-direction:column; width:100%; gap:5px; border-bottom:1px solid #eee; padding-bottom:5px; margin-bottom:5px;">
                 <div style="display:flex; gap:5px;">
                     <span style="font-weight:bold; color:#dfae26;">${index + 4}.</span>
-                    <input type="time" value="${item.startTime || ''}" style="width:90px;" oninput="updateMinistryItem(${index}, 'startTime', this.value)">
-                    <input type="text" placeholder="[Título]" value="${item.title === '[Título]' ? '' : item.title}" oninput="updateMinistryItem(${index}, 'title', this.value)">
-                    <input type="text" placeholder="Tiempo" value="${item.time}" style="width:60px;" oninput="updateMinistryItem(${index}, 'time', this.value)">
-                    <button class="btn-remove" onclick="removeMinistryItem(${index})">×</button>
+                    <input type="time" value="${item.startTime || ''}" style="width:90px;" oninput="updateMinistryItemAuditorio(${index}, 'startTime', this.value)">
+                    <input type="text" placeholder="[Título]" value="${item.title === '[Título]' ? '' : item.title}" oninput="updateMinistryItemAuditorio(${index}, 'title', this.value)">
+                    <input type="text" placeholder="Tiempo" value="${item.time}" style="width:60px;" oninput="updateMinistryItemAuditorio(${index}, 'time', this.value)">
+                    <button class="btn-remove" onclick="removeMinistryItemAuditorio(${index})">×</button>
                 </div>
-                <input type="text" placeholder="[Nombre/Nombre]" value="${item.student === '[Nombre/Nombre]' ? '' : item.student}" oninput="updateMinistryItem(${index}, 'student', this.value)">
+                <input type="text" placeholder="[Nombre/Nombre]" value="${item.student === '[Nombre/Nombre]' ? '' : item.student}" oninput="updateMinistryItemAuditorio(${index}, 'student', this.value)">
             </div>
         `;
         container.appendChild(div);
     });
 }
 
-function updateMinistryItem(index, field, value) {
+function renderMinistryInputsSalaAuxiliar() {
+    const container = document.getElementById('ministryItemsSalaAuxiliar');
+    if (!container) return;
+    container.innerHTML = '';
+    const currentState = getCurrentState();
+
+    currentState.ministryItemsSalaAuxiliar.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'item-row';
+        div.innerHTML = `
+            <div style="display:flex; flex-direction:column; width:100%; gap:5px; border-bottom:1px solid #eee; padding-bottom:5px; margin-bottom:5px;">
+                <div style="display:flex; gap:5px;">
+                    <span style="font-weight:bold; color:#dfae26;">${index + 4}.</span>
+                    <input type="time" value="${item.startTime || ''}" style="width:90px;" oninput="updateMinistryItemSalaAuxiliar(${index}, 'startTime', this.value)">
+                    <input type="text" placeholder="[Título]" value="${item.title === '[Título]' ? '' : item.title}" oninput="updateMinistryItemSalaAuxiliar(${index}, 'title', this.value)">
+                    <input type="text" placeholder="Tiempo" value="${item.time}" style="width:60px;" oninput="updateMinistryItemSalaAuxiliar(${index}, 'time', this.value)">
+                    <button class="btn-remove" onclick="removeMinistryItemSalaAuxiliar(${index})">×</button>
+                </div>
+                <input type="text" placeholder="[Nombre/Nombre]" value="${item.student === '[Nombre/Nombre]' ? '' : item.student}" oninput="updateMinistryItemSalaAuxiliar(${index}, 'student', this.value)">
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function updateMinistryItemAuditorio(index, field, value) {
     const currentState = getCurrentState();
     const defaults = { title: "[Título]", time: "X mins.", student: "[Nombre/Nombre]", startTime: "" };
 
@@ -255,21 +287,49 @@ function updateMinistryItem(index, field, value) {
         finalValue = defaults[field];
     }
 
-    currentState.ministryItems[index][field] = finalValue;
+    currentState.ministryItemsAuditorio[index][field] = finalValue;
     renderPreview();
 }
 
-function addMinistryItem() {
+function addMinistryItemAuditorio() {
     const currentState = getCurrentState();
-    currentState.ministryItems.push({ type: "Asignación", title: "[Título]", time: "X mins.", student: "[Nombre/Nombre]", startTime: "" });
-    renderMinistryInputs();
+    currentState.ministryItemsAuditorio.push({ type: "Asignación", title: "[Título]", time: "X mins.", student: "[Nombre/Nombre]", startTime: "" });
+    renderMinistryInputsAuditorio();
     renderPreview();
 }
 
-function removeMinistryItem(index) {
+function removeMinistryItemAuditorio(index) {
     const currentState = getCurrentState();
-    currentState.ministryItems.splice(index, 1);
-    renderMinistryInputs();
+    currentState.ministryItemsAuditorio.splice(index, 1);
+    renderMinistryInputsAuditorio();
+    renderPreview();
+}
+
+function updateMinistryItemSalaAuxiliar(index, field, value) {
+    const currentState = getCurrentState();
+    const defaults = { title: "[Título]", time: "X mins.", student: "[Nombre/Nombre]", startTime: "" };
+
+    // If value is empty, restore default
+    let finalValue = value;
+    if (value === "" && defaults[field]) {
+        finalValue = defaults[field];
+    }
+
+    currentState.ministryItemsSalaAuxiliar[index][field] = finalValue;
+    renderPreview();
+}
+
+function addMinistryItemSalaAuxiliar() {
+    const currentState = getCurrentState();
+    currentState.ministryItemsSalaAuxiliar.push({ type: "Asignación", title: "[Título]", time: "X mins.", student: "[Nombre/Nombre]", startTime: "" });
+    renderMinistryInputsSalaAuxiliar();
+    renderPreview();
+}
+
+function removeMinistryItemSalaAuxiliar(index) {
+    const currentState = getCurrentState();
+    currentState.ministryItemsSalaAuxiliar.splice(index, 1);
+    renderMinistryInputsSalaAuxiliar();
     renderPreview();
 }
 
@@ -278,8 +338,8 @@ function renderChristianLifeInputs() {
     container.innerHTML = '';
     const currentState = getCurrentState();
 
-    // Start numbering after ministry items (3 + length) + 1 (middle song) -> actually numbering continues
-    let startIndex = 3 + currentState.ministryItems.length;
+    // Start numbering after ministry items (3 + max length of both rooms) + 1 (middle song) -> actually numbering continues
+    let startIndex = 3 + Math.max(currentState.ministryItemsAuditorio.length, currentState.ministryItemsSalaAuxiliar.length);
 
     currentState.christianLife.items.forEach((item, index) => {
         const div = document.createElement('div');
@@ -333,7 +393,6 @@ function removeChristianLifeItem(index) {
 function renderPreview() {
     document.getElementById('programCopy1').innerHTML = generateProgramHTML(state.program1);
     document.getElementById('programCopy2').innerHTML = generateProgramHTML(state.program2);
-    document.getElementById('programCopy3').innerHTML = generateProgramHTML(state.program3);
 }
 
 function formatDateRange(startStr, endStr) {
@@ -361,10 +420,23 @@ function formatDateRange(startStr, endStr) {
 }
 
 function generateProgramHTML(programState) {
-    // Helper to render ministry items
-    let ministryHTML = '';
-    programState.ministryItems.forEach((item, index) => {
-        ministryHTML += `
+    // Helper to render ministry items for Auditorio Principal
+    let ministryHTMLAuditorio = '';
+    programState.ministryItemsAuditorio.forEach((item, index) => {
+        ministryHTMLAuditorio += `
+            <div class="program-item">
+                <div class="time">${item.startTime || '0:00'}</div>
+                <div><strong>${index + 4}. ${item.title}</strong> (${item.time})</div>
+                <div class="role-label">Estudiante/Ayudante:</div>
+                <div class="name">${item.student}</div>
+            </div>
+        `;
+    });
+
+    // Helper to render ministry items for Sala Auxiliar
+    let ministryHTMLSalaAuxiliar = '';
+    programState.ministryItemsSalaAuxiliar.forEach((item, index) => {
+        ministryHTMLSalaAuxiliar += `
             <div class="program-item">
                 <div class="time">${item.startTime || '0:00'}</div>
                 <div><strong>${index + 4}. ${item.title}</strong> (${item.time})</div>
@@ -376,7 +448,7 @@ function generateProgramHTML(programState) {
 
     // Helper to render christian life items
     let christianLifeHTML = '';
-    let clStartIndex = 3 + programState.ministryItems.length;
+    let clStartIndex = 3 + Math.max(programState.ministryItemsAuditorio.length, programState.ministryItemsSalaAuxiliar.length);
     programState.christianLife.items.forEach((item, index) => {
         christianLifeHTML += `
             <div class="program-item">
@@ -422,8 +494,6 @@ function generateProgramHTML(programState) {
         <!-- TESOROS -->
         <div class="section-header bg-grey">
             <span>TESOROS DE LA BIBLIA</span>
-            <span style="font-size:0.8em; font-weight:normal;">Sala auxiliar</span>
-            <span style="font-size:0.8em; font-weight:normal;">Auditorio principal</span>
         </div>
         <div class="treasures-grid">
             <div class="program-item">
@@ -449,11 +519,12 @@ function generateProgramHTML(programState) {
         <!-- MAESTROS -->
         <div class="section-header bg-gold">
             <span>SEAMOS MEJORES MAESTROS</span>
-            <span style="font-size:0.8em; font-weight:normal;">Sala auxiliar</span>
-            <span style="font-size:0.8em; font-weight:normal;">Auditorio principal</span>
         </div>
         <div class="ministry-grid">
-            ${ministryHTML}
+            <div style="font-weight: bold; margin-top: 2px; margin-bottom: 2px; color: #333;">Auditorio Principal</div>
+            ${ministryHTMLAuditorio}
+            <div style="font-weight: bold; margin-top: 4px; margin-bottom: 2px; color: #333;">Sala Auxiliar</div>
+            ${ministryHTMLSalaAuxiliar}
         </div>
 
         <!-- VIDA CRISTIANA -->
@@ -607,7 +678,17 @@ function generateWordMarkup(programState) {
 
     // Ministry
     html += `<tr><td colspan="4" style="${goldStyle}">SEAMOS MEJORES MAESTROS</td></tr>`;
-    programState.ministryItems.forEach((item, index) => {
+    html += `<tr><td colspan="4" style="padding: 2px 4px; font-weight: bold; color: #333; font-size: 9pt;">Auditorio Principal</td></tr>`;
+    programState.ministryItemsAuditorio.forEach((item, index) => {
+        html += createRow(
+            item.startTime || '0:00',
+            `<b>${index + 4}. ${item.title}</b> (${item.time})`,
+            'Estudiante/Ayudante:',
+            item.student
+        );
+    });
+    html += `<tr><td colspan="4" style="padding: 4px 4px 2px 4px; font-weight: bold; color: #333; font-size: 9pt;">Sala Auxiliar</td></tr>`;
+    programState.ministryItemsSalaAuxiliar.forEach((item, index) => {
         html += createRow(
             item.startTime || '0:00',
             `<b>${index + 4}. ${item.title}</b> (${item.time})`,
@@ -620,7 +701,7 @@ function generateWordMarkup(programState) {
     html += `<tr><td colspan="4" style="${redStyle}">NUESTRA VIDA CRISTIANA</td></tr>`;
     html += createRow(programState.christianLife.middleSongTime, `<b>• Canción ${programState.christianLife.middleSong}</b>`, '', '');
 
-    let clStartIndex = 3 + programState.ministryItems.length;
+    let clStartIndex = 3 + Math.max(programState.ministryItemsAuditorio.length, programState.ministryItemsSalaAuxiliar.length);
     programState.christianLife.items.forEach((item, index) => {
         html += createRow(
             item.startTime || '0:00',
@@ -661,8 +742,6 @@ function exportToWord() {
             ${generateWordMarkup(state.program1)}
             <div style="height: 10px; border-bottom: 1px dashed #999; margin: 15px 0;"></div>
             ${generateWordMarkup(state.program2)}
-            <div style="height: 10px; border-bottom: 1px dashed #999; margin: 15px 0;"></div>
-            ${generateWordMarkup(state.program3)}
         </body>
         </html>
     `;

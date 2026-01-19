@@ -31,9 +31,6 @@
                     <label style="font-weight: normal; cursor: pointer;">
                         <input type="radio" name="programSelector" value="program2" onchange="switchProgram('program2')"> Programa 2 (Pág 1 Abajo)
                     </label>
-                    <label style="font-weight: normal; cursor: pointer;">
-                        <input type="radio" name="programSelector" value="program3" onchange="switchProgram('program3')"> Programa 3 (Abajo)
-                    </label>
                 </div>
             </div>
 
@@ -108,13 +105,22 @@
                 
             </fieldset>
 
-            <!-- LIVING AS CHRISTIANS (Dynamic) -->
-            <fieldset id="ministrySection">
-                <legend>Seamos Mejores Maestros</legend>
-                <div id="ministryItems">
+            <!-- SEAMOS MEJORES MAESTROS - AUDITORIO PRINCIPAL (Dynamic) -->
+            <fieldset id="ministrySectionAuditorio">
+                <legend>Seamos Mejores Maestros - Auditorio Principal</legend>
+                <div id="ministryItemsAuditorio">
                     <!-- Dynamic items will be injected here -->
                 </div>
-                <button type="button" class="btn-add" onclick="addMinistryItem()">+ Agregar Asignación</button>
+                <button type="button" class="btn-add" onclick="addMinistryItemAuditorio()">+ Agregar Asignación</button>
+            </fieldset>
+
+            <!-- SEAMOS MEJORES MAESTROS - SALA AUXILIAR (Dynamic) -->
+            <fieldset id="ministrySectionSalaAuxiliar">
+                <legend>Seamos Mejores Maestros - Sala Auxiliar</legend>
+                <div id="ministryItemsSalaAuxiliar">
+                    <!-- Dynamic items will be injected here -->
+                </div>
+                <button type="button" class="btn-add" onclick="addMinistryItemSalaAuxiliar()">+ Agregar Asignación</button>
             </fieldset>
 
             <!-- CHRISTIAN LIFE (Dynamic) -->
@@ -165,13 +171,11 @@
 
         <!-- PREVIEW PANEL -->
         <main class="preview-container">
-            <!-- Single Sheet for all 4 programs (Vertical Stack) -->
+            <!-- Single Sheet for 2 programs (Vertical Stack) -->
             <div class="sheet-a4">
                 <div class="program-card" id="programCopy1"></div>
                 <div class="cut-line"></div>
                 <div class="program-card" id="programCopy2"></div>
-                <div class="cut-line"></div>
-                <div class="program-card" id="programCopy3"></div>
             </div>
         </main>
     </div>
