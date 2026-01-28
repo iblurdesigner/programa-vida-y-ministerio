@@ -617,10 +617,10 @@ function generatePDF() {
 
 function generateWordMarkup(programState) {
     const tableStyle = 'width: 100%; border-collapse: collapse; font-family: Helvetica, Arial, sans-serif; font-size: 9pt;';
-    const tdStyle = 'padding: 2px 2px; vertical-align: top;';
-    const headerStyle = 'background-color: #5f6368; color: white; font-weight: bold; padding: 4px; font-size: 9pt; text-transform: uppercase;';
-    const goldStyle = 'background-color: #dfae26; color: white; font-weight: bold; padding: 4px; font-size: 9pt; text-transform: uppercase;';
-    const redStyle = 'background-color: #8a1c34; color: white; font-weight: bold; padding: 4px; font-size: 9pt; text-transform: uppercase;';
+    const tdStyle = 'padding: 1px 2px; vertical-align: top;';
+    const headerStyle = 'background-color: #5f6368; color: white; font-weight: bold; padding: 2px; font-size: 9pt; text-transform: uppercase;';
+    const goldStyle = 'background-color: #dfae26; color: white; font-weight: bold; padding: 2px; font-size: 9pt; text-transform: uppercase;';
+    const redStyle = 'background-color: #8a1c34; color: white; font-weight: bold; padding: 2px; font-size: 9pt; text-transform: uppercase;';
 
     // Helper to format rows
     const createRow = (time, content, role, name, boldRole = false) => `
@@ -637,11 +637,11 @@ function generateWordMarkup(programState) {
     // Header
     html += `
         <tr>
-            <td colspan="4" style="border-bottom: 2px solid black; padding-bottom: 8px;">
+            <td colspan="4" style="border-bottom: 2px solid black; padding-bottom: 3px;">
                 <table style="width:100%;">
                     <tr>
-                        <td style="font-size:14pt; font-weight:bold; text-transform:uppercase;">${programState.congregationName}</td>
-                        <td style="font-size:12pt; font-weight:bold; text-align:right; font-family:serif;">Programa para la reunión de entre semana</td>
+                        <td style="font-size:11pt; font-weight:bold; text-transform:uppercase;">${programState.congregationName}</td>
+                        <td style="font-size:10pt; font-weight:bold; text-align:right; font-family:serif;">Programa para la reunión de entre semana</td>
                     </tr>
                 </table>
             </td>
@@ -659,11 +659,11 @@ function generateWordMarkup(programState) {
             </td>
         </tr>
         <tr>
-            <td colspan="4" style="border-bottom: 1px solid #ccc; font-weight: bold; padding: 6px 0; margin-bottom: 10px;">
+            <td colspan="4" style="border-bottom: 1px solid #ccc; font-weight: bold; padding: 2px 0;">
                 ${formatDateRange(programState.programDateStart, programState.programDateEnd)} | ${programState.weeklyReading}
             </td>
         </tr>
-        <tr><td colspan="4" style="height: 2px;"></td></tr>
+        <tr><td colspan="4" style="height: 1px;"></td></tr>
     `;
 
     // Opening
@@ -678,7 +678,7 @@ function generateWordMarkup(programState) {
 
     // Ministry
     html += `<tr><td colspan="4" style="${goldStyle}">SEAMOS MEJORES MAESTROS</td></tr>`;
-    html += `<tr><td colspan="4" style="padding: 2px 4px; font-weight: bold; color: #333; font-size: 9pt;">Auditorio Principal</td></tr>`;
+    html += `<tr><td colspan="4" style="padding: 1px 4px; font-weight: bold; color: #333; font-size: 9pt;">Auditorio Principal</td></tr>`;
     programState.ministryItemsAuditorio.forEach((item, index) => {
         html += createRow(
             item.startTime || '0:00',
@@ -687,7 +687,7 @@ function generateWordMarkup(programState) {
             item.student
         );
     });
-    html += `<tr><td colspan="4" style="padding: 4px 4px 2px 4px; font-weight: bold; color: #333; font-size: 9pt;">Sala Auxiliar</td></tr>`;
+    html += `<tr><td colspan="4" style="padding: 2px 4px 1px 4px; font-weight: bold; color: #333; font-size: 9pt;">Sala Auxiliar</td></tr>`;
     programState.ministryItemsSalaAuxiliar.forEach((item, index) => {
         html += createRow(
             item.startTime || '0:00',
@@ -729,7 +729,7 @@ function exportToWord() {
             <style>
                 @page {
                     size: A4;
-                    margin: 1.0cm 1.5cm; /* Narrow margins (Top/Bottom 1cm, Left/Right 1.5cm) */
+                    margin: 0.5cm; /* Minimal margins to fit 2 programs on one page */
                 }
                 body { 
                     font-family: 'Helvetica', 'Arial', sans-serif; 
@@ -740,7 +740,7 @@ function exportToWord() {
         </head>
         <body>
             ${generateWordMarkup(state.program1)}
-            <div style="height: 10px; border-bottom: 1px dashed #999; margin: 15px 0;"></div>
+            <div style="height: 5px; border-bottom: 1px dashed #999; margin: 8px 0;"></div>
             ${generateWordMarkup(state.program2)}
         </body>
         </html>
