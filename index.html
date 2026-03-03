@@ -100,10 +100,19 @@
                         <input type="text" id="gemsSpeaker" placeholder="[Nombre]">
                         <input type="time" id="gemsTime" value="00:00" style="width: 90px;">
                     </div>
-                    <div class="item-row">
-                        <label>Lectura de la Biblia</label>
-                        <input type="text" id="bibleReadingStudent" placeholder="[Nombre]">
-                        <input type="time" id="bibleReadingTime" value="00:00" style="width: 90px;">
+                    <div class="item-row" style="flex-direction: column; align-items: flex-start; gap: 5px;">
+                        <div style="display: flex; gap: 5px; width: 100%; align-items: center;">
+                            <label style="margin: 0; white-space: nowrap;">Lectura de la Biblia</label>
+                            <input type="time" id="bibleReadingTime" value="00:00" style="width: 90px;">
+                        </div>
+                        <div style="display: flex; gap: 5px; width: 100%; align-items: center;">
+                            <span style="font-size: 0.8em; color: var(--text-secondary); width: 120px;">Auditorio Principal:</span>
+                            <input type="text" id="bibleReadingStudent" placeholder="[Nombre]">
+                        </div>
+                        <div style="display: flex; gap: 5px; width: 100%; align-items: center;">
+                            <span style="font-size: 0.8em; color: var(--text-secondary); width: 120px;">Sala Auxiliar:</span>
+                            <input type="text" id="bibleReadingStudentAuxiliar" placeholder="[Nombre]">
+                        </div>
                     </div>
                 
             </fieldset>

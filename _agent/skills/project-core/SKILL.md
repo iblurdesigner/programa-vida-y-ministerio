@@ -19,6 +19,7 @@ Esta skill contiene las reglas fundamentales y la arquitectura del proyecto "Vid
 2.  **Doble Programa:** El sistema debe manejar siempre dos programas independientes (`program1` y `program2`) en una sola hoja A4.
 3.  **PDF Vectorial:** La exportación a PDF se realiza con `pdfmake`. Cualquier cambio visual en la previsualización HTML debe ser replicado manualmente en la definición de `pdfmake` en `script.js`.
 4.  **Numeración Dinámica:** La numeración de la sección "Nuestra Vida Cristiana" debe calcularse dinámicamente basándose en la longitud de las secciones anteriores para mantener la correlación.
+5.  **Lectura de la Biblia (Tesoros):** El punto 3 de la sección "Tesoros de la Biblia" siempre debe permitir dos asignaciones simultáneas (Auditorio Principal y Sala Auxiliar) cuando sea necesario, manteniendo el mismo número de actividad.
 
 ## Despliegue
 

@@ -19,6 +19,7 @@ const defaultProgramState = {
         gemsSpeaker: "[Nombre]",
         gemsTime: "19:15",
         bibleReadingStudent: "[Nombre]",
+        bibleReadingStudentAuxiliar: "[Nombre]",
         bibleReadingTime: "19:25"
     },
 
@@ -80,6 +81,7 @@ const inputs = {
     gemsSpeaker: document.getElementById('gemsSpeaker'),
     gemsTime: document.getElementById('gemsTime'),
     bibleReadingStudent: document.getElementById('bibleReadingStudent'),
+    bibleReadingStudentAuxiliar: document.getElementById('bibleReadingStudentAuxiliar'),
     bibleReadingTime: document.getElementById('bibleReadingTime'),
 
     middleSong: document.getElementById('middleSong'),
@@ -151,6 +153,7 @@ function loadProgramStateToInputs() {
     setVal(inputs.gemsSpeaker, currentState.treasures.gemsSpeaker);
     inputs.gemsTime.value = currentState.treasures.gemsTime;
     setVal(inputs.bibleReadingStudent, currentState.treasures.bibleReadingStudent);
+    setVal(inputs.bibleReadingStudentAuxiliar, currentState.treasures.bibleReadingStudentAuxiliar);
     inputs.bibleReadingTime.value = currentState.treasures.bibleReadingTime;
 
     setVal(inputs.middleSong, currentState.christianLife.middleSong);
@@ -198,6 +201,8 @@ function updateStateFromInput(key, value) {
         currentState.treasures.gemsTime = finalValue;
     } else if (key === 'bibleReadingStudent') {
         currentState.treasures.bibleReadingStudent = finalValue;
+    } else if (key === 'bibleReadingStudentAuxiliar') {
+        currentState.treasures.bibleReadingStudentAuxiliar = finalValue;
     } else if (key === 'bibleReadingTime') {
         currentState.treasures.bibleReadingTime = finalValue;
     } else if (key === 'congregationStudyConductor') {
@@ -511,8 +516,14 @@ function generateProgramHTML(programState) {
             <div class="program-item">
                 <div class="time">${programState.treasures.bibleReadingTime}</div>
                 <div><strong>3. Lectura de la Biblia</strong> (4 mins.)</div>
-                <div class="role-label">Estudiante:</div>
+                <div class="role-label">Auditorio Principal:</div>
                 <div class="name">${programState.treasures.bibleReadingStudent}</div>
+            </div>
+            <div class="program-item" style="margin-top: -2px;">
+                <div class="time"></div>
+                <div></div>
+                <div class="role-label">Sala Auxiliar:</div>
+                <div class="name">${programState.treasures.bibleReadingStudentAuxiliar}</div>
             </div>
         </div>
 
@@ -652,7 +663,8 @@ function generateProgramDocDefinition(programState) {
         },
         renderPdfRow(programState.treasures.talkTime, '1. ' + programState.treasures.talkTitle, '(10 mins.)', '', programState.treasures.talkSpeaker),
         renderPdfRow(programState.treasures.gemsTime, '2. Busquemos perlas escondidas', '(10 mins.)', '', programState.treasures.gemsSpeaker),
-        renderPdfRow(programState.treasures.bibleReadingTime, '3. Lectura de la Biblia', '(4 mins.)', 'Estudiante:', programState.treasures.bibleReadingStudent),
+        renderPdfRow(programState.treasures.bibleReadingTime, '3. Lectura de la Biblia', '(4 mins.)', 'Auditorio Principal:', programState.treasures.bibleReadingStudent),
+        renderPdfRow('', '', '', 'Sala Auxiliar:', programState.treasures.bibleReadingStudentAuxiliar),
 
         // SEAMOS MEJORES MAESTROS
         {
