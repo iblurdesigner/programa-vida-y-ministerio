@@ -10,9 +10,10 @@ Generar una hoja A4 que contiene **2 copias idénticas (o distintas)** del progr
 ## 2. Tech Stack
 * **Core:** HTML5, CSS3, JavaScript (Vanilla - ES6+).
 * **Dependencias (CDN):**
-    * `html2pdf.js`: Para renderizar el DOM a PDF.
+    * `pdfmake`: Para exportación a PDF de alta calidad (vectorial y con tipografías).
     * `html-docx-js`: Para convertir HTML a formato Word (.docx).
     * `FileSaver.js`: Para gestionar la descarga de archivos.
+* **Despliegue:** GitHub Pages mediante GitHub Actions (`.github/workflows/static.yml`).
 * **Estilos:** CSS nativo con Variables CSS (`:root`) para theming. No se usan preprocesadores ni frameworks CSS (como Tailwind o Bootstrap).
 
 ## 3. Arquitectura de la Interfaz (UI)
@@ -84,21 +85,17 @@ Sección dinámica (christianLife.items) para partes varias.
 Estudio Bíblico, Palabras de conclusión, Canción final y Oración.
 
 6. Lógica de Exportación
-Exportar a PDF (generatePDF)
-Clona el nodo DOM .sheet-a4.
+### Exportar a PDF (`generatePDF`)
+1. No clona el DOM.
+2. Utiliza `pdfmake` para construir un objeto de definición de documento (`docDefinition`).
+3. Traduce el estado del programa (`state.program1` y `state.program2`) a una estructura de tablas y columnas de `pdfmake`.
+4. Define estilos específicos (`styles`) para igualar la apariencia visual de la previsualización (colores, fuentes, alineación).
+5. Genera un PDF vectorial donde el texto es real, nítido y seleccionable.
 
-Lo coloca en un contenedor temporal invisible.
-
-Usa html2pdf con configuración scale: 2 para alta calidad.
-
-Importante: El PDF es una "foto" exacta de la previsualización HTML.
-
-Exportar a Word (exportToWord)
-No usa la previsualización del DOM.
-
-Construye una cadena de HTML string cruda (generateWordMarkup) usando tablas HTML antiguas (para compatibilidad con Word).
-
-Genera un documento que concatena los 2 programas separados por saltos de línea visuales.
+### Exportar a Word (`exportToWord`)
+1. No usa la previsualización del DOM ni `pdfmake`.
+2. Construye una cadena de HTML string cruda (`generateWordMarkup`) usando tablas HTML antiguas (para compatibilidad con Word).
+3. Genera un documento que concatena los 2 programas separados por saltos de línea visuales.
 
 7. Reglas para el Agente (Instrucciones de Codificación)
 Preservar Vanilla JS: No introduzca React, Vue o TypeScript. Mantener la simplicidad del archivo único script.js.

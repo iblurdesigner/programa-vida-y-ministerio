@@ -560,59 +560,164 @@ function generateProgramHTML(programState) {
 // --- Export Logic ---
 
 function generatePDF() {
-    // The .sheet-a4 element already contains the rendered preview (static HTML, not inputs)
-    // We just need to clone it and generate the PDF
-    const element = document.querySelector('.sheet-a4');
-
-    if (!element) {
-        alert('No se encontró contenido para exportar.');
-        return;
-    }
-
-    // Clone the element
-    const clone = element.cloneNode(true);
-
-    // Create a temporary container
-    const container = document.createElement('div');
-    container.style.position = 'absolute';
-    container.style.left = '-9999px';
-    container.style.top = '0';
-    container.style.width = '210mm';
-    container.style.background = 'white';
-
-    // Style the clone
-    clone.style.width = '210mm';
-    clone.style.minHeight = '297mm';
-    clone.style.margin = '0';
-    clone.style.boxShadow = 'none';
-    clone.style.transform = 'none';
-
-    container.appendChild(clone);
-    document.body.appendChild(container);
-
-    const opt = {
-        margin: 0,
-        filename: 'programa_vida_ministerio.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-            scale: 2,
-            useCORS: true,
-            letterRendering: true,
-            logging: false
+    const docDefinition = {
+        pageSize: 'A4',
+        pageMargins: [25, 20, 25, 20],
+        content: [
+            generateProgramDocDefinition(state.program1),
+            {
+                canvas: [{ type: 'line', x1: 0, y1: 5, x2: 545, y2: 5, lineWidth: 0.5, dash: { length: 5 }, lineColor: '#999999' }],
+                margin: [0, 8, 0, 8]
+            },
+            generateProgramDocDefinition(state.program2)
+        ],
+        styles: {
+            headerCongregation: { fontSize: 11, bold: true, color: '#000000' },
+            headerTitle: { fontSize: 9.5, bold: true, color: '#000000', alignment: 'right' },
+            label: { fontSize: 7.5, color: '#666666' },
+            value: { fontSize: 8.5, bold: false, color: '#000000' },
+            dateRow: { fontSize: 8.5, bold: true, margin: [0, 1, 0, 1] },
+            sectionHeader: { fontSize: 9, bold: true, color: 'white', margin: [0, 1, 0, 1] },
+            itemTime: { fontSize: 8.5, color: '#666666' },
+            itemTitle: { fontSize: 9, bold: true, color: '#000000' },
+            itemDetail: { fontSize: 8.5, color: '#000000' },
+            roleLabel: { fontSize: 7.5, color: '#666666', alignment: 'right' },
+            itemName: { fontSize: 8.5, color: '#000000' }
         },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: 'avoid-all' }
+        defaultStyle: {
+            font: 'Roboto'
+        }
     };
 
-    html2pdf().set(opt).from(clone).save().then(() => {
-        document.body.removeChild(container);
-    }).catch(err => {
-        console.error("PDF generation error:", err);
-        alert("Error al generar el PDF. Por favor, intente de nuevo.");
-        if (document.body.contains(container)) {
-            document.body.removeChild(container);
-        }
-    });
+    pdfMake.createPdf(docDefinition).download('programa_vida_ministerio.pdf');
+}
+
+function generateProgramDocDefinition(programState) {
+    const clStartIndex = 3 + Math.max(programState.ministryItemsAuditorio.length, programState.ministryItemsSalaAuxiliar.length);
+    const studyNumber = clStartIndex + programState.christianLife.items.length + 1;
+
+    const content = [
+        // Header Row
+        {
+            columns: [
+                { text: programState.congregationName.toUpperCase(), style: 'headerCongregation' },
+                { text: 'Programa para la reunión de entre semana', style: 'headerTitle' }
+            ],
+            margin: [0, 0, 0, 0.5]
+        },
+        { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 545, y2: 0, lineWidth: 1, lineColor: '#000000' }] },
+
+        // Top Info (Presidente/Consejero)
+        {
+            stack: [
+                {
+                    columns: [
+                        { width: '*', text: '' },
+                        { width: 100, text: 'Presidente:', style: 'label', alignment: 'right' },
+                        { width: 150, text: programState.chairman, style: 'value' }
+                    ]
+                },
+                {
+                    columns: [
+                        { width: '*', text: '' },
+                        { width: 150, text: 'Consejero de la sala auxiliar:', style: 'label', alignment: 'right' },
+                        { width: 150, text: programState.auxCounselor, style: 'value' }
+                    ]
+                }
+            ],
+            margin: [0, 2, 0, 2]
+        },
+
+        // Date and Reading Header
+        {
+            stack: [
+                { text: `${formatDateRange(programState.programDateStart, programState.programDateEnd).toUpperCase()} | ${programState.weeklyReading.toUpperCase()}`, style: 'dateRow' },
+                { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 545, y2: 0, lineWidth: 0.5, lineColor: '#cccccc' }] }
+            ],
+            margin: [0, 0, 0, 2]
+        },
+
+        // Opening Song & Introduction
+        renderPdfRow(programState.openingSongTime, `• Canción ${programState.openingSong}`, '', '', ''),
+        renderPdfRow(programState.openingPrayerTime, '• Palabras de introducción (1 min.)', '', 'Oración:', programState.openingPrayer),
+
+        // TESOROS DE LA BIBLIA
+        {
+            table: {
+                widths: ['*'],
+                body: [[{ text: 'TESOROS DE LA BIBLIA', style: 'sectionHeader', border: [false, false, false, false] }]]
+            },
+            layout: { fillColor: '#5f6368' },
+            margin: [0, 3, 0, 3]
+        },
+        renderPdfRow(programState.treasures.talkTime, '1. ' + programState.treasures.talkTitle, '(10 mins.)', '', programState.treasures.talkSpeaker),
+        renderPdfRow(programState.treasures.gemsTime, '2. Busquemos perlas escondidas', '(10 mins.)', '', programState.treasures.gemsSpeaker),
+        renderPdfRow(programState.treasures.bibleReadingTime, '3. Lectura de la Biblia', '(4 mins.)', 'Estudiante:', programState.treasures.bibleReadingStudent),
+
+        // SEAMOS MEJORES MAESTROS
+        {
+            table: {
+                widths: ['*'],
+                body: [[{ text: 'SEAMOS MEJORES MAESTROS', style: 'sectionHeader', border: [false, false, false, false] }]]
+            },
+            layout: { fillColor: '#dfae26' },
+            margin: [0, 3, 0, 3]
+        },
+        { text: 'Auditorio Principal', fontSize: 9.5, bold: true, margin: [0, 1, 0, 1] },
+        ...programState.ministryItemsAuditorio.map((item, index) =>
+            renderPdfRow(item.startTime || '00:00', `${index + 4}. ${item.title}`, `(${item.time})`, 'Estudiante/Ayudante:', item.student)
+        ),
+        { text: 'Sala Auxiliar', fontSize: 9.5, bold: true, margin: [0, 4, 0, 1] },
+        ...programState.ministryItemsSalaAuxiliar.map((item, index) =>
+            renderPdfRow(item.startTime || '00:00', `${index + 4}. ${item.title}`, `(${item.time})`, 'Estudiante/Ayudante:', item.student)
+        ),
+
+        // NUESTRA VIDA CRISTIANA
+        {
+            table: {
+                widths: ['*'],
+                body: [[{ text: 'NUESTRA VIDA CRISTIANA', style: 'sectionHeader', border: [false, false, false, false] }]]
+            },
+            layout: { fillColor: '#8a1c34' },
+            margin: [0, 3, 0, 3]
+        },
+        renderPdfRow(programState.christianLife.middleSongTime, `• Canción ${programState.christianLife.middleSong}`, '', '', ''),
+        ...programState.christianLife.items.map((item, index) =>
+            renderPdfRow(item.startTime || '00:00', `${clStartIndex + index + 1}. ${item.title}`, `(${item.time})`, '', item.speaker)
+        ),
+        renderPdfRow(programState.christianLife.studyTime, `${studyNumber}. Estudio bíblico de la congregación`, '(30 mins.)', 'Conductor/Lector:', `${programState.christianLife.conductor}\n${programState.christianLife.reader}`),
+        {
+            columns: [
+                { width: 40, text: programState.christianLife.closingCommentsTime || '20:33', style: 'itemTime' },
+                { width: '*', text: '• Palabras de conclusión (3 min.)', style: 'itemDetail' }
+            ],
+            margin: [0, 1, 0, 1]
+        },
+        renderPdfRow(programState.christianLife.closingSongTime, `• Canción ${programState.christianLife.closingSong}`, '', 'Oración:', programState.christianLife.closingPrayer)
+    ];
+
+    return { stack: content };
+}
+
+function renderPdfRow(time, title, duration, roleLabel, name) {
+    return {
+        columns: [
+            { width: 40, text: time, style: 'itemTime' },
+            {
+                width: '*',
+                stack: [
+                    {
+                        columns: [
+                            { text: [{ text: title, style: 'itemTitle' }, { text: duration ? ` ${duration}` : '', style: 'itemDetail' }] },
+                            { width: 100, text: roleLabel, style: 'roleLabel' },
+                            { width: 140, text: name, style: 'itemName' }
+                        ]
+                    }
+                ]
+            }
+        ],
+        margin: [0, 0.5, 0, 0.5]
+    };
 }
 
 function generateWordMarkup(programState) {
@@ -752,3 +857,5 @@ function exportToWord() {
 
 // Start
 init();
+
+
